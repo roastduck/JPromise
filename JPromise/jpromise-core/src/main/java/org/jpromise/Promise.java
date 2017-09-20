@@ -23,14 +23,16 @@ public class Promise<IN,OUT>
 
     private boolean canceled = false;
 
-    Boolean runInUI; // Should not be placed in AndroidPromise for it is invoked in constructor
+    final Object runInUILock;
+    final Object alreadyRunLock;
 
     Promise()
     {
         parents = new Vector<>();
         resNext = new Vector<>();
         rejNext = new Vector<>();
-        runInUI = false;
+        runInUILock = new Object();
+        alreadyRunLock = new Object();
     }
 
     /** Create a Promise object without input
@@ -66,10 +68,13 @@ public class Promise<IN,OUT>
     <T> void thenPipe(final Promise<OUT,T> next)
     {
         next.parents.add(this);
-        if (!alreadyRun)
-            resNext.add(next);
-        else if (resolved)
-            next.submit(output);
+        synchronized (alreadyRunLock)
+        {
+            if (!alreadyRun)
+                resNext.add(next);
+            else if (resolved)
+                next.submit(output);
+        }
     }
 
     <T> void failPipe(final Promise<Exception,T> next)
@@ -77,10 +82,13 @@ public class Promise<IN,OUT>
         for (Promise<?,?> parent : parents)
             parent.failPipe(next);
         next.parents.add(this);
-        if (!alreadyRun)
-            rejNext.add(next);
-        else if (rejected)
-            next.submit(throwable);
+        synchronized (alreadyRunLock)
+        {
+            if (!alreadyRun)
+                rejNext.add(next);
+            else if (rejected)
+                next.submit(throwable);
+        }
     }
 
     /** What should be done after the Promise finished its callback normally
@@ -128,38 +136,48 @@ public class Promise<IN,OUT>
      *  @param timeout : if time's out, throw an InterruptedException
      *  @return : this Promise
      */
-    public synchronized Promise<IN,OUT> waitUntilHasRun(long timeout) throws InterruptedException
+    public Promise<IN,OUT> waitUntilHasRun(long timeout) throws InterruptedException
     {
-        if (alreadyRun)
+        synchronized (alreadyRunLock)
+        {
+            if (alreadyRun)
+                return this;
+            alreadyRunLock.wait(timeout);
+            if (!alreadyRun)
+                throw new InterruptedException();
             return this;
-        wait(timeout);
-        if (!alreadyRun)
-            throw new InterruptedException();
-        return this;
+        }
     }
 
-    protected synchronized void runSync(IN input)
+    synchronized void runSync(IN input) // Don't allow multiple runSync at the same time
     {
         if (canceled)
             return;
         if (alreadyRun)
             return;
+
         try
         {
             output = callback.runWrapped(input);
-            for (Promise<OUT,?> next : resNext)
-                next.submit(output);
             resolved = true;
         } catch (Exception e)
         {
             throwable = e;
-            for (Promise<Exception,?> next : rejNext)
-                next.submit(throwable);
             rejected = true;
         }
-        resNext = null;
-        rejNext = null;
-        alreadyRun = true;
-        notifyAll();
+
+        synchronized (alreadyRunLock) // Don't allow piping now
+        {
+            if (resolved)
+                for (Promise<OUT, ?> next : resNext)
+                    next.submit(output);
+            else
+                for (Promise<Exception, ?> next : rejNext)
+                    next.submit(throwable);
+            resNext = null;
+            rejNext = null;
+            alreadyRun = true;
+            alreadyRunLock.notifyAll();
+        }
     }
 }

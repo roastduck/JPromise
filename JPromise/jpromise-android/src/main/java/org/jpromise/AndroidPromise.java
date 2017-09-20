@@ -6,6 +6,10 @@ import android.os.Message;
 
 public class AndroidPromise<IN,OUT> extends Promise<IN,OUT>
 {
+    private boolean runInUI = false;
+
+    private static Handler uiHandler = new Handler(Looper.getMainLooper());
+
     AndroidPromise() {}
 
     /** Create a Promise object without input
@@ -27,7 +31,7 @@ public class AndroidPromise<IN,OUT> extends Promise<IN,OUT>
      */
     public void setRunInUI()
     {
-        synchronized (runInUI)
+        synchronized (runInUILock)
         {
             runInUI = true;
         }
@@ -57,56 +61,53 @@ public class AndroidPromise<IN,OUT> extends Promise<IN,OUT>
 
     /** Same as `.then`, but run in UI thread
      */
-    public <T> Promise<OUT,T> thenUI(Callback<OUT,T> callback)
+    public <T> AndroidPromise<OUT,T> thenUI(Callback<OUT,T> callback)
     {
-        AndroidPromise<OUT,T> ret = then(callback);
-        ret.setRunInUI();
-        return ret;
+        AndroidPromise<OUT,T> next = new AndroidPromise<>();
+        next.callback = callback;
+        next.setRunInUI(); // Do this before piping
+        thenPipe(next);
+        return next;
     }
 
     /** Same as `.fail`, but run in UI thread
      */
-    public <T> Promise<Exception,T> failUI(Callback<Exception,T> callback)
+    public <T> AndroidPromise<Exception,T> failUI(Callback<Exception,T> callback)
     {
-        AndroidPromise<Exception,T> ret = fail(callback);
-        ret.setRunInUI();
-        return ret;
+        AndroidPromise<Exception,T> next = new AndroidPromise<>();
+        next.callback = callback;
+        next.setRunInUI();
+        failPipe(next);
+        return next;
     }
 
     @Override
-    protected void submit(IN input)
+    protected void submit(final IN input)
     {
-        synchronized (runInUI)
+        synchronized (runInUILock)
         {
             if (runInUI)
             {
-                RunMessage runMessage = new RunMessage();
-                runMessage.promise = this;
-                runMessage.input = input;
-                Message msg = uiHandler.obtainMessage(0, runMessage);
-                uiHandler.sendMessage(msg);
+                boolean success = uiHandler.post(new Runnable() {
+                    @Override
+                    public void run()
+                    {
+                        AndroidPromise.this.runSync(input);
+                    }
+                });
+                if (!success)
+                {
+                    callback = new CallbackIO<IN,OUT>() {
+                        @Override
+                        public OUT run(IN o) throws Exception
+                        {
+                            throw new Exception("Failed to post to UI Thread");
+                        }
+                    };
+                    super.submit(input);
+                }
             } else
                 super.submit(input);
         }
-    }
-
-    private static Handler uiHandler = new Handler(Looper.getMainLooper()) {
-        @Override
-        @SuppressWarnings("unchecked")
-        public void handleMessage(Message msg)
-        {
-            super.handleMessage(msg);
-            if (msg.what == 0)
-            {
-                RunMessage runMessage = (RunMessage)(msg.obj);
-                runMessage.promise.runSync(runMessage.input);
-            }
-        }
-    };
-
-    private static class RunMessage
-    {
-        AndroidPromise promise;
-        Object input;
     }
 }

@@ -40,7 +40,7 @@ public class AndroidPromiseTest extends PromiseTest
     @Test
     public void testInUIThreadWhenSpecified() throws Exception
     {
-        ((AndroidPromise<Integer,Integer>)promiseFactory(new CallbackIO<Integer, Integer>() {
+        AndroidPromise p = ((AndroidPromise<Integer,Integer>)promiseFactory(new CallbackIO<Integer, Integer>() {
             @Override
             public Integer run(Integer x) { return x + 1; }
         }, 1))
@@ -50,7 +50,11 @@ public class AndroidPromiseTest extends PromiseTest
                     {
                         assertTrue(Looper.myLooper() == Looper.getMainLooper());
                     }
-                })
-                .waitUntilHasRun();
+                });
+        p.fail(new CallbackI<Exception>() {
+            @Override
+            public void run(Exception e) { assertTrue(false); }
+        });
+        p.waitUntilHasRun();
     }
 }

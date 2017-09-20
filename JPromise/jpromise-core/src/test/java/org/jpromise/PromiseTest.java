@@ -76,7 +76,7 @@ public class PromiseTest
     {
         final Counter triggerNum1 = new Counter(0);
         final Counter triggerNum2 = new Counter(0);
-        promiseFactory(new CallbackV() {
+        Promise p = promiseFactory(new CallbackV() {
             @Override
             public void run() throws Exception
             {
@@ -90,13 +90,15 @@ public class PromiseTest
                         triggerNum1.num++;
                         throw new Exception("except2");
                     }
-                })
-                .fail(new CallbackI<Exception>()
+                });
+        p.
+                fail(new CallbackI<Exception>()
                 {
                     @Override
                     public void run(Exception e) { triggerNum2.num++; }
                 })
                 .waitUntilHasRun();
+        p.waitUntilHasRun();
         assertEquals(1, triggerNum1.num);
         assertEquals(1, triggerNum2.num);
     }
