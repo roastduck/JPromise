@@ -1,6 +1,6 @@
 package org.jpromise;
 
-public interface Callback<IN,OUT>
+interface Callback<IN,OUT>
 {
-    OUT run(IN result) throws Exception;
+    OUT runWrapped(IN result) throws Exception;
 }

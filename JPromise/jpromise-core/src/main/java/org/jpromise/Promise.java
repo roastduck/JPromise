@@ -33,7 +33,15 @@ public class Promise<IN,OUT>
         runInUI = false;
     }
 
-    /** Create a Promise object
+    /** Create a Promise object without input
+     *  @param callback : Callback run immediately after the object being constructed
+     */
+    public Promise(Callback<IN,OUT> callback)
+    {
+        this(callback, null);
+    }
+
+    /** Create a Promise object with input
      *  @param callback : Callback run immediately after the object being constructed
      *  @param input : Input for the callback
      */
@@ -138,7 +146,7 @@ public class Promise<IN,OUT>
             return;
         try
         {
-            output = callback.run(input);
+            output = callback.runWrapped(input);
             for (Promise<OUT,?> next : resNext)
                 next.submit(output);
             resolved = true;

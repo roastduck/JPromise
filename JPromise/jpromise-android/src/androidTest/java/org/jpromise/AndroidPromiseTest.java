@@ -14,22 +14,24 @@ public class AndroidPromiseTest extends PromiseTest
         return new AndroidPromise<IN,OUT>(callback, input);
     }
 
+    @Override
+    protected <IN,OUT> Promise<IN,OUT> promiseFactory(Callback<IN,OUT> callback)
+    {
+        return new AndroidPromise<IN,OUT>(callback);
+    }
+
     @Test
     public void testDefaultNotInUIThread() throws Exception
     {
-        promiseFactory(new Callback<Integer, Integer>() {
+        promiseFactory(new CallbackIO<Integer, Integer>() {
             @Override
-            public Integer run(Integer x)
-            {
-                return x + 1;
-            }
+            public Integer run(Integer x) { return x + 1; }
         }, 1)
-                .then(new Callback<Integer, Object>() {
+                .then(new CallbackI<Integer>() {
                     @Override
-                    public Object run(Integer x)
+                    public void run(Integer x)
                     {
                         assertTrue(Looper.myLooper() != Looper.getMainLooper());
-                        return null;
                     }
                 })
                 .waitUntilHasRun();
@@ -38,19 +40,15 @@ public class AndroidPromiseTest extends PromiseTest
     @Test
     public void testInUIThreadWhenSpecified() throws Exception
     {
-        ((AndroidPromise<Integer,Integer>)promiseFactory(new Callback<Integer, Integer>() {
+        ((AndroidPromise<Integer,Integer>)promiseFactory(new CallbackIO<Integer, Integer>() {
             @Override
-            public Integer run(Integer x)
-            {
-                return x + 1;
-            }
+            public Integer run(Integer x) { return x + 1; }
         }, 1))
-                .thenUI(new Callback<Integer, Object>() {
+                .thenUI(new CallbackI<Integer>() {
                     @Override
-                    public Object run(Integer x)
+                    public void run(Integer x)
                     {
                         assertTrue(Looper.myLooper() == Looper.getMainLooper());
-                        return null;
                     }
                 })
                 .waitUntilHasRun();

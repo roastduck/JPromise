@@ -8,20 +8,18 @@ public class AndroidPromise<IN,OUT> extends Promise<IN,OUT>
 {
     AndroidPromise() {}
 
-    /** Create a Promise object
+    /** Create a Promise object without input
+     *  @param callback : Callback run immediately after the object being constructed
+     */
+    public AndroidPromise(Callback<IN,OUT> callback) { this(callback, null); }
+
+    /** Create a Promise object with input
      *  @param callback : Callback run immediately after the object being constructed
      *  @param input : Input for the callback
      */
     public AndroidPromise(Callback<IN,OUT> callback, final IN input)
     {
         super(callback, input);
-    }
-
-    static <IN,OUT> AndroidPromise<IN,OUT> newDeferred(Callback<IN,OUT> callback)
-    {
-        AndroidPromise<IN,OUT> ret = new AndroidPromise<>();
-        ret.callback = callback;
-        return ret;
     }
 
     /** Set the callback if this Promise to be run in the UI thread
