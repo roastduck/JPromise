@@ -10,3 +10,22 @@ dependencies {
     testCompile 'junit:junit:4.12'
 }
 
+ext {
+    bintrayRepo = 'maven'
+    bintrayName = 'JPromise'
+    publishedGroupId = 'org.jpromise'
+    libraryName = 'JPromise Core'
+    artifact = 'jpromise-core'
+    libraryDescription = 'Simple Promise like asynchronization library for Java and Android'
+    siteUrl = 'https://github.com/roastduck/JPromise'
+    gitUrl = 'https://github.com/roastduck/JPromise.git'
+    libraryVersion = '0.0.1'
+    developerId = 'roastduck'
+    developerName = 'Shizhi Tang'
+    developerEmail = 'beantang.tang@gmail.com'
+    licenseName = 'The MIT License'
+    licenseUrl = 'https://github.com/roastduck/JPromise/blob/master/LICENSE'
+    allLicenses = ["MIT"]
+}
+
+apply from: 'https://raw.githubusercontent.com/isanwenyu/BintrayUploadGradle/master/bintray_upload.gradle'
