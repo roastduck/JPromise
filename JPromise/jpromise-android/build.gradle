@@ -48,7 +48,7 @@ ext {
     libraryDescription = 'Simple Promise like asynchronization library for Java and Android'
     siteUrl = 'https://github.com/roastduck/JPromise'
     gitUrl = 'https://github.com/roastduck/JPromise.git'
-    libraryVersion = '0.0.1'
+    libraryVersion = '0.0.2'
     developerId = 'roastduck'
     developerName = 'Shizhi Tang'
     developerEmail = 'beantang.tang@gmail.com'
