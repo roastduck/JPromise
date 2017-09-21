@@ -2,6 +2,7 @@ package org.jpromise;
 
 import java.util.List;
 import java.util.Vector;
+import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ExecutorService;
 
@@ -147,6 +148,75 @@ public class Promise<IN,OUT>
                 throw new InterruptedException();
             return this;
         }
+    }
+
+    /** Generate callback objects from lambda expression
+     */
+    public static <I> CallbackI<I> from(final CallbackILambda<I> o)
+    {
+        return new CallbackI<I>() {
+            @Override
+            public void run(I result) throws Exception
+            {
+                o.run(result);
+            }
+        };
+    }
+    public static <O> CallbackO<O> from(final CallbackOLambda<O> o)
+    {
+        return new CallbackO<O>() {
+            @Override
+            public O run() throws Exception
+            {
+                return o.run();
+            }
+        };
+    }
+    public static <I,O> CallbackIO<I,O> from(final CallbackIOLambda<I,O> o)
+    {
+        return new CallbackIO<I,O>() {
+            @Override
+            public O run(I result) throws Exception
+            {
+                return o.run(result);
+            }
+        };
+    }
+    public static CallbackV from(final CallbackVLambda o)
+    {
+        return new CallbackV() {
+            @Override
+            public void run() throws Exception
+            {
+                o.run();
+            }
+        };
+    }
+
+    /** Generate callback objects from Runnable
+     */
+    public static CallbackV from(final Runnable o)
+    {
+        return new CallbackV() {
+            @Override
+            public void run()
+            {
+                o.run();
+            }
+        };
+    }
+
+    /** Generate callback objects from Callable
+     */
+    public static <O> CallbackO<O> from(final Callable<O> o)
+    {
+        return new CallbackO<O>() {
+            @Override
+            public O run() throws Exception
+            {
+                return o.call();
+            }
+        };
     }
 
     synchronized void runSync(IN input) // Don't allow multiple runSync at the same time
