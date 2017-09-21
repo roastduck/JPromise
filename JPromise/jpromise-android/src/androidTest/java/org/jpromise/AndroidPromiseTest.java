@@ -9,7 +9,7 @@ import static org.junit.Assert.*;
 public class AndroidPromiseTest extends PromiseTest
 {
     @Override
-    protected <IN,OUT> Promise<IN,OUT> promiseFactory(Callback<IN,OUT> callback, IN input)
+    protected <IN,OUT> AndroidPromise<IN,OUT> promiseFactory(Callback<IN,OUT> callback, IN input)
     {
         return new AndroidPromise<IN,OUT>(callback, input);
     }
@@ -40,10 +40,10 @@ public class AndroidPromiseTest extends PromiseTest
     @Test
     public void testInUIThreadWhenSpecified() throws Exception
     {
-        AndroidPromise p = ((AndroidPromise<Integer,Integer>)promiseFactory(new CallbackIO<Integer, Integer>() {
+        AndroidPromise p = promiseFactory(new CallbackIO<Integer, Integer>() {
             @Override
             public Integer run(Integer x) { return x + 1; }
-        }, 1))
+        }, 1)
                 .thenUI(new CallbackI<Integer>() {
                     @Override
                     public void run(Integer x)
