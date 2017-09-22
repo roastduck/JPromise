@@ -1,8 +1,7 @@
-package org.jpromise;
+package me.roastduck.jpromise;
 
 import android.os.Handler;
 import android.os.Looper;
-import android.os.Message;
 
 public class AndroidPromise<IN,OUT> extends Promise<IN,OUT>
 {
@@ -97,7 +96,7 @@ public class AndroidPromise<IN,OUT> extends Promise<IN,OUT>
                 });
                 if (!success)
                 {
-                    callback = new CallbackIO<IN,OUT>() {
+                    callback = new me.roastduck.jpromise.CallbackIO<IN,OUT>() {
                         @Override
                         public OUT run(IN o) throws Exception
                         {

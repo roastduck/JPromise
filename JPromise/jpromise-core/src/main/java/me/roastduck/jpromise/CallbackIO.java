@@ -1,4 +1,4 @@
-package org.jpromise;
+package me.roastduck.jpromise;
 
 abstract public class CallbackIO<IN,OUT> implements Callback<IN,OUT>
 {

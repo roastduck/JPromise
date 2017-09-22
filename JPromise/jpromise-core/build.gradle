@@ -13,7 +13,7 @@ dependencies {
 ext {
     bintrayRepo = 'maven'
     bintrayName = 'JPromise'
-    publishedGroupId = 'org.jpromise'
+    publishedGroupId = 'me.roastduck.jpromise'
     libraryName = 'JPromise Core'
     artifact = 'jpromise-core'
     libraryDescription = 'Simple Promise like asynchronization library for Java and Android'

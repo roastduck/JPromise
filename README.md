@@ -13,7 +13,7 @@ A Simple Promise like asynchronization library for Java and Android.
 ## Quick Example
 
 ```java
-import org.jpromise.*;
+import me.roastduck.jpromise.*;
 
 public class Main {
     public static void main(String[] args)

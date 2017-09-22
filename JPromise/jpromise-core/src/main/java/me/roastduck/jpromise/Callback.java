@@ -1,4 +1,4 @@
-package org.jpromise;
+package me.roastduck.jpromise;
 
 interface Callback<IN,OUT>
 {

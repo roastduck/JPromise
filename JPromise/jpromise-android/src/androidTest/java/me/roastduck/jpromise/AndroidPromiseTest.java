@@ -1,4 +1,4 @@
-package org.jpromise;
+package me.roastduck.jpromise;
 
 import android.os.Looper;
 
@@ -23,7 +23,7 @@ public class AndroidPromiseTest extends PromiseTest
     @Test
     public void testDefaultNotInUIThread() throws Exception
     {
-        promiseFactory(new CallbackIO<Integer, Integer>() {
+        promiseFactory(new me.roastduck.jpromise.CallbackIO<Integer, Integer>() {
             @Override
             public Integer run(Integer x) { return x + 1; }
         }, 1)
@@ -40,7 +40,7 @@ public class AndroidPromiseTest extends PromiseTest
     @Test
     public void testInUIThreadWhenSpecified() throws Exception
     {
-        AndroidPromise p = promiseFactory(new CallbackIO<Integer, Integer>() {
+        AndroidPromise p = promiseFactory(new me.roastduck.jpromise.CallbackIO<Integer, Integer>() {
             @Override
             public Integer run(Integer x) { return x + 1; }
         }, 1)

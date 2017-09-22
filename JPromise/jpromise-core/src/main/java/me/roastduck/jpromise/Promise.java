@@ -1,4 +1,4 @@
-package org.jpromise;
+package me.roastduck.jpromise;
 
 import java.util.List;
 import java.util.Vector;
@@ -162,9 +162,9 @@ public class Promise<IN,OUT>
             }
         };
     }
-    public static <O> CallbackO<O> from(final CallbackOLambda<O> o)
+    public static <O> me.roastduck.jpromise.CallbackO<O> from(final CallbackOLambda<O> o)
     {
-        return new CallbackO<O>() {
+        return new me.roastduck.jpromise.CallbackO<O>() {
             @Override
             public O run() throws Exception
             {
@@ -182,7 +182,7 @@ public class Promise<IN,OUT>
             }
         };
     }
-    public static CallbackV from(final CallbackVLambda o)
+    public static CallbackV from(final me.roastduck.jpromise.CallbackVLambda o)
     {
         return new CallbackV() {
             @Override
@@ -208,9 +208,9 @@ public class Promise<IN,OUT>
 
     /** Generate callback objects from Callable
      */
-    public static <O> CallbackO<O> from(final Callable<O> o)
+    public static <O> me.roastduck.jpromise.CallbackO<O> from(final Callable<O> o)
     {
-        return new CallbackO<O>() {
+        return new me.roastduck.jpromise.CallbackO<O>() {
             @Override
             public O run() throws Exception
             {
