@@ -25,6 +25,23 @@ public class Main {
 }
 ```
 
+## Install
+
+This library is released on JCenter with Group ID "me.roastduck.jpromise". There are 2 artifacts: "jpromise-core" for normal Java programs and "jpromise-android" with special thread control (see [below](https://github.com/roastduck/JPromise/tree/master#thread-control-for-android)) for Android. Here is a configuration example for Gradle:
+
+```
+repositories {
+    jcenter()
+}
+
+dependencies {
+    compile 'me.roastduck.jpromise:jpromise-core:0.0.3'
+    // Or compile 'me.roastduck.jpromise:jpromise-android:0.0.3'
+}
+```
+
+And `import me.roastduck.jpromise.*`.
+
 ## Usages
 
 ### Create an asynchronous task
