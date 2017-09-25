@@ -27,11 +27,11 @@ public class Main {
 
 ## Install
 
-This library is released on JCenter with Group ID "me.roastduck.jpromise". There are 2 artifacts: "jpromise-core" for normal Java programs and "jpromise-android" with special thread control (see [below](https://github.com/roastduck/JPromise/tree/master#thread-control-for-android)) for Android. Here is a configuration example for Gradle:
+This library is released on my repository on Bintray with Group ID "me.roastduck.jpromise". There are 2 artifacts: "jpromise-core" for normal Java programs and "jpromise-android" with special thread control (see [below](https://github.com/roastduck/JPromise/tree/master#thread-control-for-android)) for Android. Here is a configuration example for Gradle:
 
 ```
 repositories {
-    jcenter()
+    maven { url 'https://dl.bintray.com/roastduck/maven' }
 }
 
 dependencies {
